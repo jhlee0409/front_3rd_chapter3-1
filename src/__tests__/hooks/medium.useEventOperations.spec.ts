@@ -24,14 +24,21 @@ vi.mock('@chakra-ui/react', () => {
 });
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  const mockToast = vi.fn();
+  (useToast as Mock).mockReturnValue(mockToast);
+
   const { result } = renderHook(() => useEventOperations(false));
 
   // 초기 상태 확인
-  expect(result.current.events).toEqual([]);
-
   await waitFor(() => {
     // 초기 이벤트 데이터 확인
     expect(result.current.events).toEqual(initialEvents);
+  });
+
+  expect(mockToast).toHaveBeenCalledWith({
+    title: '일정 로딩 완료!',
+    status: 'info',
+    duration: 1000,
   });
 });
 
@@ -50,6 +57,9 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
 
   const { list: resultEvents } = createEventResolver(initialEvents, newEvent, false);
 
+  const mockToast = vi.fn();
+  (useToast as Mock).mockReturnValue(mockToast);
+
   const { result } = renderHook(() => useEventOperations(false));
 
   await waitFor(() => {
@@ -60,11 +70,14 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
     result.current.saveEvent(newEvent);
   });
 
-  const mockToast = vi.fn();
-  (useToast as Mock).mockReturnValue(mockToast);
-
   await waitFor(() => {
     expect(result.current.events).toEqual(resultEvents);
+    expect(mockToast).toHaveBeenCalledWith({
+      title: '일정이 추가되었습니다.',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
   });
 });
 

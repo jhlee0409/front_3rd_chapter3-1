@@ -153,7 +153,6 @@ describe('일정 CRUD 및 기본 기능', () => {
     await userEvent.click(deleteButton);
 
     // 삭제된 일정이 더 이상 조회되지 않는지 확인
-    screen.debug(eventList);
     expect(within(eventList).queryByText(newEvent.title)).not.toBeInTheDocument();
   });
 });
