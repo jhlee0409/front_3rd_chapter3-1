@@ -41,7 +41,7 @@ describe('getDaysInMonth', () => {
 
 describe('getWeekDates', () => {
   it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
-    const weekDates = getWeekDates(new Date('2024-11-06T00:00:00Z'));
+    const weekDates = getWeekDates(new Date('2024-11-06'));
     expect(weekDates).toEqual([
       new Date('2024-11-03'),
       new Date('2024-11-04'),
@@ -167,7 +167,7 @@ describe('getEventsForDay', () => {
     {
       id: '2',
       title: '생일 파티',
-      date: '2024-11-0',
+      date: '2024-11-04',
       startTime: '18:00',
       endTime: '21:00',
       description: '친구의 생일 파티',
@@ -182,7 +182,7 @@ describe('getEventsForDay', () => {
     {
       id: '3',
       title: '프로젝트 마감',
-      date: '2024-11-32',
+      date: '2024-11-21',
       startTime: '09:00',
       endTime: '17:00',
       description: '프로젝트 제출 마감일',
@@ -216,8 +216,6 @@ describe('getEventsForDay', () => {
   });
 });
 
-// 한 주의 시작은 목요일이 속한 주이다.
-// https://m.blog.naver.com/neo0khai/221742409362
 describe('formatWeek', () => {
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
     const week = formatWeek(new Date('2024-11-15'));
