@@ -15,6 +15,7 @@ import { Event, EventForm } from '../../types.ts';
 
 const initialEvents = events as Event[];
 
+const mockToast = vi.fn(); // 모킹된 toast 함수
 vi.mock('@chakra-ui/react', () => {
   const originalModule = vi.importActual('@chakra-ui/react');
   return {
@@ -22,14 +23,11 @@ vi.mock('@chakra-ui/react', () => {
     useToast: vi.fn(),
   };
 });
+(useToast as Mock).mockReturnValue(mockToast);
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
-  const mockToast = vi.fn();
-  (useToast as Mock).mockReturnValue(mockToast);
-
   const { result } = renderHook(() => useEventOperations(false));
 
-  // 초기 상태 확인
   await waitFor(() => {
     // 초기 이벤트 데이터 확인
     expect(result.current.events).toEqual(initialEvents);
@@ -55,10 +53,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
     notificationTime: 10,
   };
 
-  const { list: resultEvents } = createEventResolver(initialEvents, newEvent, false);
-
-  const mockToast = vi.fn();
-  (useToast as Mock).mockReturnValue(mockToast);
+  const { list: resultEvents } = createEventResolver(initialEvents, newEvent);
 
   const { result } = renderHook(() => useEventOperations(false));
 
@@ -88,7 +83,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
     endTime: '12:00',
   };
 
-  const { list: resultEvents } = updateEventResolver(initialEvents, updatedEvent, false);
+  const { list: resultEvents } = updateEventResolver(initialEvents, updatedEvent);
   const { result } = renderHook(() => useEventOperations(true));
 
   await waitFor(() => {
@@ -105,7 +100,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
 });
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
-  const { list: resultEvents } = deleteEventResolver(initialEvents, initialEvents[0].id, false);
+  const { list: resultEvents } = deleteEventResolver(initialEvents, initialEvents[0].id);
 
   const { result } = renderHook(() => useEventOperations(false));
 
@@ -129,9 +124,6 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
     })
   );
 
-  const mockToast = vi.fn(); // 모킹된 toast 함수
-  (useToast as Mock).mockReturnValue(mockToast); // useToast 훅이 mockToast를 반환하도록 설정
-
   const { result } = renderHook(() => useEventOperations(false));
 
   await waitFor(() => {
@@ -151,9 +143,6 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
       return HttpResponse.error();
     })
   );
-
-  const mockToast = vi.fn();
-  (useToast as Mock).mockReturnValue(mockToast);
 
   const { result } = renderHook(() => useEventOperations(true));
 
@@ -175,9 +164,6 @@ it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되�
       return HttpResponse.error();
     })
   );
-
-  const mockToast = vi.fn();
-  (useToast as Mock).mockReturnValue(mockToast);
 
   const { result } = renderHook(() => useEventOperations(false));
 

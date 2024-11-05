@@ -2,29 +2,48 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
+import {
+  setupCreateHandler,
+  setupDeleteHandler,
+  setupUpdateHandler,
+} from '../__mocks__/handlersUtils';
+import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import App from '../App';
+import { Event, EventForm } from '../types';
+
+const initialEvents = [...events] as Event[];
 
 describe('일정 CRUD 및 기본 기능', () => {
   const newEvent = {
     title: '새로운 일정',
-    date: '2024-11-15',
+    date: '2024-10-15',
     startTime: '10:00',
     endTime: '11:00',
     description: '새로운 일정 설명',
     location: '새로운 장소',
     category: '업무',
-    notificationTime: '10',
-    repeatType: 'daily',
-    repeatInterval: '1',
+    notificationTime: 10,
+    repeat: {
+      type: 'daily',
+      interval: 1,
+    },
     repeatEndDate: '2024-12-31',
-  };
+  } as EventForm;
 
   beforeEach(() => {
+    vi.setSystemTime('2024-10-01T00:00:00');
     render(<App />, { wrapper: ChakraProvider });
   });
 
+  // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const _initialEvents = [...initialEvents];
+    setupCreateHandler(_initialEvents);
+
+    await waitFor(() => {
+      expect(screen.getByText(/일정 로딩 완료!/i)).toBeInTheDocument();
+    });
 
     // 일정 추가 시 추가되는 요소들
     const titleInput = screen.getByLabelText('제목');
@@ -54,13 +73,14 @@ describe('일정 CRUD 및 기본 기능', () => {
     await userEvent.type(descriptionInput, newEvent.description);
     await userEvent.type(locationInput, newEvent.location);
     await userEvent.selectOptions(categoryInput, newEvent.category);
-    await userEvent.selectOptions(notificationTimeSelect, newEvent.notificationTime);
+    await userEvent.selectOptions(notificationTimeSelect, newEvent.notificationTime.toString());
     await userEvent.click(repeatCheckbox);
+
     if (repeatTypeSelect) {
-      await userEvent.selectOptions(repeatTypeSelect, newEvent.repeatType);
+      await userEvent.selectOptions(repeatTypeSelect, newEvent.repeat.type);
     }
     if (repeatIntervalInput) {
-      await userEvent.type(repeatIntervalInput, newEvent.repeatInterval);
+      await userEvent.type(repeatIntervalInput, newEvent.repeat.interval.toString());
     }
 
     // ================================================================
@@ -68,34 +88,34 @@ describe('일정 CRUD 및 기본 기능', () => {
     // 일정 추가 버튼 클릭 시 일정 정보가 저장되는지 확인
     await userEvent.click(addEventButton);
     const eventList = screen.getByTestId('event-list');
-    const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
+    // const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
 
     // ================================================================
-
-    // 검색어 입력 후 검색 결과 확인
-    await userEvent.type(searchInput, newEvent.title);
 
     expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    const firstEvent = initialEvents[0] as Event;
+
     const updatesEvent = {
-      ...newEvent,
+      ...firstEvent,
       location: '수정된 장소',
     };
-    // 수정할 일정 선택
+
+    setupUpdateHandler(initialEvents);
+
     const eventList = screen.getByTestId('event-list');
 
-    const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
-
-    await userEvent.type(searchInput, newEvent.title);
+    expect(screen.getByText(/검색 결과가 없습니다/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
+      expect(screen.getByText(firstEvent.location)).toBeInTheDocument();
     });
 
-    const editButton = within(eventList).getByLabelText(/edit event/i);
-    await userEvent.click(editButton);
+    // 수정할 일정 선택
+    const editButton = within(eventList).getAllByLabelText(/edit event/i);
+    await userEvent.click(editButton[0]);
 
     // ================================================================
 
@@ -114,19 +134,20 @@ describe('일정 CRUD 및 기본 기능', () => {
     const addEventButton = screen.getByTestId('event-submit-button');
 
     // 수정 버튼 클릭 시 기존값이 잘 들어갔는 지 확인
-    expect(titleInput).toHaveValue(newEvent.title);
-    expect(dateInput).toHaveValue(newEvent.date);
-    expect(startTimeInput).toHaveValue(newEvent.startTime);
-    expect(endTimeInput).toHaveValue(newEvent.endTime);
-    expect(descriptionInput).toHaveValue(newEvent.description);
-    expect(locationInput).toHaveValue(newEvent.location);
-    expect(categoryInput).toHaveValue(newEvent.category);
-    expect(notificationTimeSelect).toHaveValue(newEvent.notificationTime);
+    expect(titleInput).toHaveValue(firstEvent.title);
+    expect(dateInput).toHaveValue(firstEvent.date);
+    expect(startTimeInput).toHaveValue(firstEvent.startTime);
+    expect(endTimeInput).toHaveValue(firstEvent.endTime);
+    expect(descriptionInput).toHaveValue(firstEvent.description);
+    expect(locationInput).toHaveValue(firstEvent.location);
+    expect(categoryInput).toHaveValue(firstEvent.category);
+    expect(notificationTimeSelect).toHaveValue(firstEvent.notificationTime.toString());
+
     if (repeatTypeSelect) {
-      expect(repeatTypeSelect).toHaveValue(newEvent.repeatType);
+      expect(repeatTypeSelect).toHaveValue(firstEvent.repeat.type);
     }
     if (repeatIntervalInput) {
-      expect(repeatIntervalInput).toHaveValue(newEvent.repeatInterval);
+      expect(repeatIntervalInput).toHaveValue(firstEvent.repeat.interval.toString());
     }
 
     // 장소를 지우고 수정한 장소 입력
@@ -142,18 +163,22 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const firstEvent = initialEvents[0] as Event;
+
+    setupDeleteHandler(initialEvents);
+
     const eventList = screen.getByTestId('event-list');
     const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
 
     // 검색어 입력
-    await userEvent.type(searchInput, newEvent.title);
+    await userEvent.type(searchInput, firstEvent.title);
 
     // 삭제 버튼 클릭
     const deleteButton = within(eventList).getByLabelText(/delete event/i);
     await userEvent.click(deleteButton);
 
     // 삭제된 일정이 더 이상 조회되지 않는지 확인
-    expect(within(eventList).queryByText(newEvent.title)).not.toBeInTheDocument();
+    expect(within(eventList).queryByText(firstEvent.title)).not.toBeInTheDocument();
   });
 });
 
@@ -181,6 +206,7 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     const date = new Date('2024-10-15T00:00:00');
     vi.setSystemTime(date);
+    // 어떤 생각을 가지고 하고 있는지 확인
 
     render(<App />, { wrapper: ChakraProvider });
 
@@ -360,8 +386,8 @@ describe('일정 충돌', () => {
       expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
     });
 
-    const editButton = within(eventList).getByLabelText(/edit event/i);
-    await userEvent.click(editButton);
+    const editButton = within(eventList).getAllByLabelText(/edit event/i);
+    await userEvent.click(editButton[0]);
 
     // ================================================================
 

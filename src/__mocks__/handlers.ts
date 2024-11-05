@@ -13,13 +13,13 @@ export const handlers = [
 
   http.post('/api/events', async ({ request }) => {
     const event = (await request.json()) as EventForm;
-    const { newEventWithId } = createEventResolver(events as Event[], event, true);
+    const { newEventWithId } = createEventResolver(events as Event[], event);
     return HttpResponse.json(newEventWithId, { status: 201 });
   }),
 
   http.put('/api/events/:id', async ({ request }) => {
     const event = (await request.json()) as Event;
-    const { status, updatedEvent, message } = updateEventResolver(events as Event[], event, true);
+    const { status, updatedEvent, message } = updateEventResolver(events as Event[], event);
 
     if (status === 404) {
       return HttpResponse.json({ message }, { status });
@@ -30,7 +30,7 @@ export const handlers = [
 
   http.delete('/api/events/:id', ({ params }) => {
     const id = params.id as string;
-    deleteEventResolver(events as Event[], id, true);
+    deleteEventResolver(events as Event[], id);
     return new Response(null, { status: 204 });
   }),
 ];
