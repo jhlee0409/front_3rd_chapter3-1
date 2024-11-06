@@ -5,7 +5,7 @@ import { Alert } from '@/shared/ui';
 
 export const EventNotifications = () => {
   const { notificationsValues } = useEventContext();
-  const { notifications, setNotifications } = notificationsValues;
+  const { notifications, removeNotification } = notificationsValues;
 
   return (
     <>
@@ -18,7 +18,7 @@ export const EventNotifications = () => {
               variant="solid"
               width="auto"
               message={notification.message}
-              onClose={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
+              onClose={() => removeNotification(index)}
             />
           ))}
         </VStack>

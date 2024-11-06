@@ -4,30 +4,40 @@ import { useState } from 'react';
 import { Event } from '../types';
 import { createNotificationMessage, getUpcomingEvents } from '../utils/notificationUtils';
 
+import { filterByIndex, getIds, spread } from '@/shared/lib/array';
+
+const createNotifications = (events: Event[]) =>
+  events.map((event) => ({
+    id: event.id,
+    message: createNotificationMessage(event),
+  }));
+
 export const useNotifications = (events: Event[]) => {
   const [notifications, setNotifications] = useState<{ id: string; message: string }[]>([]);
   const [notifiedEvents, setNotifiedEvents] = useState<string[]>([]);
 
+  const settingNotifications = (upcomingEvents: Event[]) => {
+    const upcomingNotifications = createNotifications(upcomingEvents);
+    setNotifications((prev) => spread(prev, upcomingNotifications));
+  };
+
+  const settingNotifiedEvents = (upcomingEvents: Event[]) => {
+    const upcomingEventsIds = getIds(upcomingEvents);
+    setNotifiedEvents((prev) => spread(prev, upcomingEventsIds));
+  };
+
   const checkUpcomingEvents = () => {
     const now = new Date();
     const upcomingEvents = getUpcomingEvents(events, now, notifiedEvents);
-
-    setNotifications((prev) => [
-      ...prev,
-      ...upcomingEvents.map((event) => ({
-        id: event.id,
-        message: createNotificationMessage(event),
-      })),
-    ]);
-
-    setNotifiedEvents((prev) => [...prev, ...upcomingEvents.map(({ id }) => id)]);
+    settingNotifications(upcomingEvents);
+    settingNotifiedEvents(upcomingEvents);
   };
 
   const removeNotification = (index: number) => {
-    setNotifications((prev) => prev.filter((_, i) => i !== index));
+    setNotifications((prev) => filterByIndex(prev, index));
   };
 
   useInterval(checkUpcomingEvents, 1000); // 1초마다 체크
 
-  return { notifications, notifiedEvents, setNotifications, removeNotification };
+  return { notifications, notifiedEvents, removeNotification };
 };
