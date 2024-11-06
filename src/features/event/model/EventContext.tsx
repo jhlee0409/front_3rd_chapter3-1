@@ -1,24 +1,28 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
+import { createEventFormData } from '../lib/eventUtils';
+
 import { useCalendarView } from '@/hooks/useCalendarView';
 import { useEventForm } from '@/hooks/useEventForm';
 import { useEventOperations } from '@/hooks/useEventOperations';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useSearch } from '@/hooks/useSearch';
-import { Event } from '@/types';
+import { Event, EventForm } from '@/types';
+import { findOverlappingEvents } from '@/utils/eventOverlap';
 
 type EventContextType = {
-  formValues: ReturnType<typeof useEventForm>;
+  formValues: ReturnType<typeof useEventForm> & {
+    eventFormData: Event | EventForm;
+  };
   operationsValues: ReturnType<typeof useEventOperations>;
   notificationsValues: ReturnType<typeof useNotifications>;
   calendarViewValues: ReturnType<typeof useCalendarView>;
   searchValues: ReturnType<typeof useSearch>;
   state: {
     isOverlapDialogOpen: boolean;
-    setIsOverlapDialogOpen: (isOpen: boolean) => void;
+    handleCloseOverlapDialog: () => void;
     overlappingEvents: Event[];
-    setOverlappingEvents: (events: Event[]) => void;
-    handleOverlapDialogOpen: (events: Event[]) => void;
+    handleOverlap: () => void;
   };
 };
 
@@ -50,32 +54,67 @@ export const EventProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
 
+  const eventFormData: Event | EventForm = useMemo(() => {
+    return createEventFormData({
+      formState: formValues.formState,
+      repeatState: formValues.repeatState,
+      startTime: formValues.startTime,
+      endTime: formValues.endTime,
+      editingEvent: formValues.editingEvent,
+    });
+  }, [
+    formValues.formState,
+    formValues.startTime,
+    formValues.endTime,
+    formValues.editingEvent,
+    formValues.repeatState,
+  ]);
+
   const handleOverlapDialogOpen = useCallback((events: Event[]) => {
     setIsOverlapDialogOpen(true);
     setOverlappingEvents(events);
   }, []);
 
+  const handleCloseOverlapDialog = useCallback(() => {
+    setIsOverlapDialogOpen(false);
+  }, []);
+
+  const handleOverlap = useCallback(() => {
+    const overlapping = findOverlappingEvents(eventFormData, operationsValues.events);
+    if (overlapping.length > 0) {
+      handleOverlapDialogOpen(overlapping);
+      return;
+    }
+  }, [eventFormData, operationsValues.events, handleOverlapDialogOpen]);
+
   const state = useMemo(
     () => ({
       isOverlapDialogOpen,
-      setIsOverlapDialogOpen,
+      handleCloseOverlapDialog,
       overlappingEvents,
-      setOverlappingEvents,
-      handleOverlapDialogOpen,
+      handleOverlap,
     }),
-    [isOverlapDialogOpen, overlappingEvents, handleOverlapDialogOpen]
+    [isOverlapDialogOpen, overlappingEvents, handleOverlap, handleCloseOverlapDialog]
   );
 
   const values = useMemo(
     () => ({
-      formValues,
+      formValues: { ...formValues, eventFormData },
       operationsValues,
       state,
       notificationsValues,
       calendarViewValues,
       searchValues,
     }),
-    [formValues, operationsValues, state, notificationsValues, calendarViewValues, searchValues]
+    [
+      formValues,
+      operationsValues,
+      state,
+      notificationsValues,
+      calendarViewValues,
+      searchValues,
+      eventFormData,
+    ]
   );
 
   return <EventContext.Provider value={values}>{children}</EventContext.Provider>;

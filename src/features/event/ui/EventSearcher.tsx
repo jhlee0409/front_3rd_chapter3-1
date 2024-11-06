@@ -1,14 +1,11 @@
 import { FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
 
+import SearchedEvents from './SearchedEvents';
 import { useEventContext } from '../model/EventContext';
 
-import { SearchedEvents } from '@/entities/event/ui';
-
 export const EventSearcher = () => {
-  const { formValues, operationsValues, notificationsValues, searchValues } = useEventContext();
+  const { searchValues, notificationsValues } = useEventContext();
 
-  const { editEvent } = formValues;
-  const { deleteEvent } = operationsValues;
   const { searchTerm, filteredEvents, setSearchTerm } = searchValues;
   const { notifiedEvents } = notificationsValues;
 
@@ -23,12 +20,7 @@ export const EventSearcher = () => {
         />
       </FormControl>
 
-      <SearchedEvents
-        filteredEvents={filteredEvents}
-        notifiedEvents={notifiedEvents}
-        onEdit={editEvent}
-        onDelete={deleteEvent}
-      />
+      <SearchedEvents filteredEvents={filteredEvents} notifiedEvents={notifiedEvents} />
     </VStack>
   );
 };

@@ -1,22 +1,21 @@
 import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { Box, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
 
+import { useEventContext } from '../model/EventContext';
+
 import { notificationOptions } from '@/shared/model/notification-config';
 import { Event } from '@/types';
 
 type SearchedEventsProps = {
   filteredEvents: Event[];
   notifiedEvents: string[];
-  onEdit: (event: Event) => void;
-  onDelete: (id: string) => void;
 };
 
-export const SearchedEvents = ({
-  filteredEvents,
-  notifiedEvents,
-  onEdit,
-  onDelete,
-}: SearchedEventsProps) => {
+export const SearchedEvents = ({ filteredEvents, notifiedEvents }: SearchedEventsProps) => {
+  const { formValues, operationsValues } = useEventContext();
+
+  const { editEvent } = formValues;
+  const { deleteEvent } = operationsValues;
   return (
     <>
       {filteredEvents.length === 0 ? (
@@ -65,12 +64,12 @@ export const SearchedEvents = ({
                 <IconButton
                   aria-label="Edit event"
                   icon={<EditIcon />}
-                  onClick={() => onEdit(event)}
+                  onClick={() => editEvent(event)}
                 />
                 <IconButton
                   aria-label="Delete event"
                   icon={<DeleteIcon />}
-                  onClick={() => onDelete(event.id)}
+                  onClick={() => deleteEvent(event.id)}
                 />
               </HStack>
             </HStack>

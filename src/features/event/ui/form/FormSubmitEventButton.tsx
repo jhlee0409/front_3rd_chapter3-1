@@ -1,11 +1,7 @@
 import { Button, useToast } from '@chakra-ui/react';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
-import { createEventFormData } from '../../lib/eventUtils';
 import { useEventContext } from '../../model/EventContext';
-
-import { Event, EventForm } from '@/types';
-import { findOverlappingEvents } from '@/utils/eventOverlap';
 
 export const FormSubmitEventButton = () => {
   const { formValues, operationsValues, state } = useEventContext();
@@ -17,23 +13,13 @@ export const FormSubmitEventButton = () => {
     endTimeError,
     editingEvent,
     resetForm,
-    repeatState,
+    eventFormData,
   } = formValues;
   const { title, date } = formState;
-  const { events, saveEvent } = operationsValues;
-  const { handleOverlapDialogOpen } = state;
+  const { saveEvent } = operationsValues;
+  const { handleOverlap } = state;
 
   const toast = useToast();
-
-  const eventData: Event | EventForm = useMemo(() => {
-    return createEventFormData({
-      formState,
-      repeatState,
-      startTime,
-      endTime,
-      editingEvent,
-    });
-  }, [formState, startTime, endTime, editingEvent, repeatState]);
 
   const handleShowRequiredError = useCallback(() => {
     if (!title || !date || !startTime || !endTime) {
@@ -58,19 +44,11 @@ export const FormSubmitEventButton = () => {
     }
   }, [toast, startTimeError, endTimeError]);
 
-  const handleOverlap = useCallback(() => {
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      handleOverlapDialogOpen(overlapping);
-      return;
-    }
-  }, [eventData, events, handleOverlapDialogOpen]);
-
   const addOrUpdateEvent = async () => {
     handleShowRequiredError();
     handleShowTimeError();
     handleOverlap();
-    await saveEvent(eventData);
+    await saveEvent(eventFormData);
     resetForm();
   };
 

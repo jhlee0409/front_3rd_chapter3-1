@@ -4,3 +4,4 @@ export { EventAlert } from './EventAlert';
 export { EventCalendar } from './EventCalendar';
 export { EventNotifications } from './EventNotifications';
 export { EventSearcher } from './EventSearcher';
+export { SearchedEvents } from './SearchedEvents';

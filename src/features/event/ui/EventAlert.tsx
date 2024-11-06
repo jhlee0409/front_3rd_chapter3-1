@@ -10,16 +10,12 @@ export const EventAlert = () => {
   const { formValues, operationsValues, state } = useEventContext();
   const { formState, repeatState, startTime, endTime, editingEvent } = formValues;
   const { saveEvent } = operationsValues;
-  const { isOverlapDialogOpen, setIsOverlapDialogOpen, overlappingEvents } = state;
+  const { isOverlapDialogOpen, handleCloseOverlapDialog, overlappingEvents } = state;
 
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const handleClose = () => {
-    setIsOverlapDialogOpen(false);
-  };
-
   const handleSave = () => {
-    handleClose();
+    handleCloseOverlapDialog();
     const eventData = createEventFormData({
       startTime,
       endTime,
@@ -34,7 +30,7 @@ export const EventAlert = () => {
     <AlertDialog.Container
       isOpen={isOverlapDialogOpen}
       leastDestructiveRef={cancelRef}
-      onClose={handleClose}
+      onClose={handleCloseOverlapDialog}
     >
       <AlertDialog.Header fontSize="lg" fontWeight="bold">
         일정 겹침 경고
@@ -51,7 +47,7 @@ export const EventAlert = () => {
       </AlertDialog.Body>
 
       <AlertDialog.Footer>
-        <Button ref={cancelRef} onClick={handleClose}>
+        <Button ref={cancelRef} onClick={handleCloseOverlapDialog}>
           취소
         </Button>
         <Button colorScheme="red" onClick={handleSave} ml={3}>
