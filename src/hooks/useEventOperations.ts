@@ -6,7 +6,7 @@ import { Event, EventForm } from '@/types';
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
   const toast = useToast();
-  const initialized = useRef(false); // Ref to track initialization
+  const initialized = useRef(false);
 
   const fetchEvents = async () => {
     try {

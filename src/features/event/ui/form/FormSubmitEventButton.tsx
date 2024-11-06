@@ -1,6 +1,7 @@
 import { Button, useToast } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
 
+import { createEventFormData } from '../../lib/eventUtils';
 import { useEventContext } from '../../model/EventContext';
 
 import { Event, EventForm } from '@/types';
@@ -9,60 +10,30 @@ import { findOverlappingEvents } from '@/utils/eventOverlap';
 export const FormSubmitEventButton = () => {
   const { formValues, operationsValues, state } = useEventContext();
   const {
-    title,
-    date,
+    formState,
     startTime,
     endTime,
-    description,
-    location,
-    category,
-    isRepeating,
-    repeatType,
-    repeatInterval,
-    repeatEndDate,
-    notificationTime,
     startTimeError,
     endTimeError,
     editingEvent,
     resetForm,
+    repeatState,
   } = formValues;
+  const { title, date } = formState;
   const { events, saveEvent } = operationsValues;
   const { handleOverlapDialogOpen } = state;
 
   const toast = useToast();
 
   const eventData: Event | EventForm = useMemo(() => {
-    return {
-      id: editingEvent ? editingEvent.id : undefined,
-      title,
-      date,
+    return createEventFormData({
+      formState,
+      repeatState,
       startTime,
       endTime,
-      description,
-      location,
-      category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
-      notificationTime,
-    };
-  }, [
-    editingEvent,
-    title,
-    date,
-    startTime,
-    endTime,
-    description,
-    location,
-    category,
-    isRepeating,
-    repeatType,
-    repeatInterval,
-    repeatEndDate,
-    notificationTime,
-  ]);
+      editingEvent,
+    });
+  }, [formState, startTime, endTime, editingEvent, repeatState]);
 
   const handleShowRequiredError = useCallback(() => {
     if (!title || !date || !startTime || !endTime) {

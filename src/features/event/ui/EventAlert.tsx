@@ -1,29 +1,15 @@
 import { Button, Text } from '@chakra-ui/react';
 import { useRef } from 'react';
 
+import { createEventFormData } from '../lib/eventUtils';
+
 import { useEventContext } from '@/features/event/model/EventContext';
 import { AlertDialog } from '@/shared/ui';
 
 export const EventAlert = () => {
   const { formValues, operationsValues, state } = useEventContext();
-  const {
-    title,
-    date,
-    startTime,
-    endTime,
-    description,
-    location,
-    category,
-    isRepeating,
-    repeatType,
-    repeatInterval,
-    repeatEndDate,
-    notificationTime,
-    editingEvent,
-  } = formValues;
-
+  const { formState, repeatState, startTime, endTime, editingEvent } = formValues;
   const { saveEvent } = operationsValues;
-
   const { isOverlapDialogOpen, setIsOverlapDialogOpen, overlappingEvents } = state;
 
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -34,22 +20,14 @@ export const EventAlert = () => {
 
   const handleSave = () => {
     handleClose();
-    saveEvent({
-      id: editingEvent ? editingEvent.id : undefined,
-      title,
-      date,
+    const eventData = createEventFormData({
       startTime,
       endTime,
-      description,
-      location,
-      category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
-      notificationTime,
+      formState,
+      repeatState,
+      editingEvent,
     });
+    saveEvent(eventData);
   };
 
   return (

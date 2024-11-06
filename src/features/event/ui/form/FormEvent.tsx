@@ -22,27 +22,20 @@ const categories = ['업무', '개인', '가족', '기타'];
 export const FormEvent = () => {
   const { formValues } = useEventContext();
   const {
-    title,
-    setTitle,
-    date,
-    setDate,
+    formState,
+    repeatState,
+
     startTime,
     endTime,
-    description,
-    setDescription,
-    location,
-    setLocation,
-    category,
-    setCategory,
-    isRepeating,
-    setIsRepeating,
-    notificationTime,
-    setNotificationTime,
+
     startTimeError,
     endTimeError,
+
     editingEvent,
     handleStartTimeChange,
     handleEndTimeChange,
+    handleEventChange,
+    handleRepeatChange,
   } = formValues;
 
   return (
@@ -51,12 +44,19 @@ export const FormEvent = () => {
 
       <FormControl>
         <FormLabel>제목</FormLabel>
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Input
+          value={formState.title}
+          onChange={(e) => handleEventChange('title', e.target.value)}
+        />
       </FormControl>
 
       <FormControl>
         <FormLabel>날짜</FormLabel>
-        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <Input
+          type="date"
+          value={formState.date}
+          onChange={(e) => handleEventChange('date', e.target.value)}
+        />
       </FormControl>
 
       <HStack width="100%">
@@ -88,17 +88,26 @@ export const FormEvent = () => {
 
       <FormControl>
         <FormLabel>설명</FormLabel>
-        <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Input
+          value={formState.description}
+          onChange={(e) => handleEventChange('description', e.target.value)}
+        />
       </FormControl>
 
       <FormControl>
         <FormLabel>위치</FormLabel>
-        <Input value={location} onChange={(e) => setLocation(e.target.value)} />
+        <Input
+          value={formState.location}
+          onChange={(e) => handleEventChange('location', e.target.value)}
+        />
       </FormControl>
 
       <FormControl>
         <FormLabel>카테고리</FormLabel>
-        <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <Select
+          value={formState.category}
+          onChange={(e) => handleEventChange('category', e.target.value)}
+        >
           <option value="">카테고리 선택</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -110,7 +119,10 @@ export const FormEvent = () => {
 
       <FormControl>
         <FormLabel>반복 설정</FormLabel>
-        <Checkbox isChecked={isRepeating} onChange={(e) => setIsRepeating(e.target.checked)}>
+        <Checkbox
+          isChecked={repeatState.isRepeating}
+          onChange={(e) => handleRepeatChange('isRepeating', e.target.checked.toString())}
+        >
           반복 일정
         </Checkbox>
       </FormControl>
@@ -118,8 +130,8 @@ export const FormEvent = () => {
       <FormControl>
         <FormLabel>알림 설정</FormLabel>
         <Select
-          value={notificationTime}
-          onChange={(e) => setNotificationTime(Number(e.target.value))}
+          value={formState.notificationTime}
+          onChange={(e) => handleEventChange('notificationTime', e.target.value)}
         >
           {notificationOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -129,7 +141,7 @@ export const FormEvent = () => {
         </Select>
       </FormControl>
 
-      {isRepeating && <FormRepeatControl />}
+      {repeatState.isRepeating && <FormRepeatControl />}
       <FormSubmitEventButton />
     </VStack>
   );

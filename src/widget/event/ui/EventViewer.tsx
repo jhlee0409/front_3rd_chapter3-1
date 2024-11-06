@@ -1,8 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 
-import { FormEvent } from '@/features/event/ui';
-import { EventCalendar } from '@/features/event/ui/EventCalendar';
-import { EventSearcher } from '@/features/event/ui/EventSearcher';
+import { FormEvent, EventCalendar, EventSearcher } from '@/features/event/ui';
 
 export const EventViewer = () => {
   return (

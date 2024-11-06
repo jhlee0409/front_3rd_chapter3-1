@@ -7,13 +7,25 @@ import {
   setupDeleteHandler,
   setupUpdateHandler,
 } from '../__mocks__/handlersUtils';
-import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import App from '../App';
 import { Event, EventForm } from '../types';
 
 import { Providers } from '@/app/providers';
 
-const initialEvents = [...events] as Event[];
+const initialEvents = [
+  {
+    id: '1',
+    title: '기존 회의',
+    date: '2024-10-15',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '기존 팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  },
+] as Event[];
 
 const Provider = ({ children }: { children: React.ReactNode }) => <Providers>{children}</Providers>;
 
@@ -203,6 +215,7 @@ describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     const date = new Date('2024-10-01T00:00:00');
     vi.setSystemTime(date);
+
     render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
