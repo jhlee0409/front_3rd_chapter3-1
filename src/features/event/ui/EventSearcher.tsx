@@ -26,8 +26,8 @@ export const EventSearcher = () => {
       <SearchedEvents
         filteredEvents={filteredEvents}
         notifiedEvents={notifiedEvents}
-        editEvent={editEvent}
-        deleteEvent={deleteEvent}
+        onEdit={editEvent}
+        onDelete={deleteEvent}
       />
     </VStack>
   );

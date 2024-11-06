@@ -7,16 +7,15 @@ import { Event } from '@/types';
 type SearchedEventsProps = {
   filteredEvents: Event[];
   notifiedEvents: string[];
-  editEvent: (event: Event) => void;
-  deleteEvent: (id: string) => void;
+  onEdit: (event: Event) => void;
+  onDelete: (id: string) => void;
 };
 
 export const SearchedEvents = ({
   filteredEvents,
   notifiedEvents,
-
-  editEvent,
-  deleteEvent,
+  onEdit,
+  onDelete,
 }: SearchedEventsProps) => {
   return (
     <>
@@ -66,12 +65,12 @@ export const SearchedEvents = ({
                 <IconButton
                   aria-label="Edit event"
                   icon={<EditIcon />}
-                  onClick={() => editEvent(event)}
+                  onClick={() => onEdit(event)}
                 />
                 <IconButton
                   aria-label="Delete event"
                   icon={<DeleteIcon />}
-                  onClick={() => deleteEvent(event.id)}
+                  onClick={() => onDelete(event.id)}
                 />
               </HStack>
             </HStack>

@@ -1,5 +1,6 @@
-import { BellIcon } from '@chakra-ui/icons';
-import { Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
+
+import { CalendarDayCell } from './CalendarDayCell';
 
 import { weekDays } from '@/shared/model/date-config';
 import { Table } from '@/shared/ui';
@@ -8,13 +9,13 @@ import { formatWeek, getWeekDates, isEqualDate } from '@/utils/dateUtils';
 
 type WeekViewCalendarProps = {
   currentDate: Date;
-  filteredEvents: Event[];
+  events: Event[];
   notifiedEvents: string[];
 };
 
 export const WeekViewCalendar = ({
   currentDate,
-  filteredEvents,
+  events,
   notifiedEvents,
 }: WeekViewCalendarProps) => {
   const weekDates = getWeekDates(currentDate);
@@ -41,28 +42,11 @@ export const WeekViewCalendar = ({
                 width="14.28%"
               >
                 <Text fontWeight="bold">{date.getDate()}</Text>
-                {filteredEvents
+                {events
                   .filter((event) => isEqualDate(new Date(event.date), date))
                   .map((event) => {
                     const isNotified = notifiedEvents.includes(event.id);
-                    return (
-                      <Box
-                        key={event.id}
-                        p={1}
-                        my={1}
-                        bg={isNotified ? 'red.100' : 'gray.100'}
-                        borderRadius="md"
-                        fontWeight={isNotified ? 'bold' : 'normal'}
-                        color={isNotified ? 'red.500' : 'inherit'}
-                      >
-                        <HStack spacing={1}>
-                          {isNotified && <BellIcon />}
-                          <Text fontSize="sm" noOfLines={1}>
-                            {event.title}
-                          </Text>
-                        </HStack>
-                      </Box>
-                    );
+                    return <CalendarDayCell key={event.id} event={event} isNotified={isNotified} />;
                   })}
               </Table.Cell>
             ))}

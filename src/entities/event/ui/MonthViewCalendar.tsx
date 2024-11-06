@@ -1,5 +1,6 @@
-import { BellIcon } from '@chakra-ui/icons';
-import { Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
+
+import { CalendarDayCell } from './CalendarDayCell';
 
 import { weekDays } from '@/shared/model/date-config';
 import { Table } from '@/shared/ui';
@@ -9,7 +10,7 @@ import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/uti
 type MonthViewCalendarProps = {
   currentDate: Date;
 
-  filteredEvents: Event[];
+  events: Event[];
   notifiedEvents: string[];
   holidays: Record<string, string>;
 };
@@ -17,7 +18,7 @@ type MonthViewCalendarProps = {
 export const MonthViewCalendar = ({
   currentDate,
 
-  filteredEvents,
+  events,
   notifiedEvents,
   holidays,
 }: MonthViewCalendarProps) => {
@@ -59,25 +60,10 @@ export const MonthViewCalendar = ({
                             {holiday}
                           </Text>
                         )}
-                        {getEventsForDay(filteredEvents, day).map((event) => {
+                        {getEventsForDay(events, day).map((event) => {
                           const isNotified = notifiedEvents.includes(event.id);
                           return (
-                            <Box
-                              key={event.id}
-                              p={1}
-                              my={1}
-                              bg={isNotified ? 'red.100' : 'gray.100'}
-                              borderRadius="md"
-                              fontWeight={isNotified ? 'bold' : 'normal'}
-                              color={isNotified ? 'red.500' : 'inherit'}
-                            >
-                              <HStack spacing={1}>
-                                {isNotified && <BellIcon />}
-                                <Text fontSize="sm" noOfLines={1}>
-                                  {event.title}
-                                </Text>
-                              </HStack>
-                            </Box>
+                            <CalendarDayCell key={event.id} event={event} isNotified={isNotified} />
                           );
                         })}
                       </>

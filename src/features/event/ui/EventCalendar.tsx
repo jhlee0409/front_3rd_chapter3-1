@@ -19,14 +19,14 @@ export const EventCalendar = () => {
       {view === 'week' && (
         <WeekViewCalendar
           currentDate={currentDate}
-          filteredEvents={filteredEvents}
+          events={filteredEvents}
           notifiedEvents={notifiedEvents}
         />
       )}
       {view === 'month' && (
         <MonthViewCalendar
           currentDate={currentDate}
-          filteredEvents={filteredEvents}
+          events={filteredEvents}
           notifiedEvents={notifiedEvents}
           holidays={holidays}
         />
