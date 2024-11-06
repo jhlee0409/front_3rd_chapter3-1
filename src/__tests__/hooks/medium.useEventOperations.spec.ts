@@ -15,7 +15,7 @@ import { Event, EventForm } from '../../types.ts';
 
 const initialEvents = events as Event[];
 
-const mockToast = vi.fn(); // 모킹된 toast 함수
+const mockToast = vi.fn();
 vi.mock('@chakra-ui/react', () => {
   const originalModule = vi.importActual('@chakra-ui/react');
   return {

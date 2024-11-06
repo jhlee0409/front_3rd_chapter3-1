@@ -39,15 +39,23 @@ describe('일정 CRUD 및 기본 기능', () => {
     render(<App />, { wrapper: Provider });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const _initialEvents = [...initialEvents];
     setupCreateHandler(_initialEvents);
 
-    await waitFor(() => {
-      expect(screen.getByText(/일정 로딩 완료!/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/검색 결과가 없습니다/i)).toBeInTheDocument();
+
+    // 한번만 나오게 할 수는 없을까?
+    const toastMessage = await screen.findAllByText(/일정 로딩 완료!/i);
+    expect(toastMessage[0]).toBeInTheDocument();
+
+    expect(screen.queryByText(/검색 결과가 없습니다/i)).not.toBeInTheDocument();
 
     // 일정 추가 시 추가되는 요소들
     const titleInput = screen.getByLabelText('제목');
@@ -92,7 +100,6 @@ describe('일정 CRUD 및 기본 기능', () => {
     // 일정 추가 버튼 클릭 시 일정 정보가 저장되는지 확인
     await userEvent.click(addEventButton);
     const eventList = screen.getByTestId('event-list');
-    // const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
 
     // ================================================================
 
@@ -116,6 +123,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     await waitFor(() => {
       expect(screen.getByText(firstEvent.location)).toBeInTheDocument();
     });
+
+    expect(screen.queryByText(/검색 결과가 없습니다/i)).not.toBeInTheDocument();
 
     // 수정할 일정 선택
     const editButton = within(eventList).getAllByLabelText(/edit event/i);
@@ -187,8 +196,6 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  beforeEach(() => {});
-
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -432,7 +439,8 @@ describe('일정 충돌', () => {
     await userEvent.click(addEventButton);
 
     // 시간 설정 오류 노출 확인
-    expect(screen.getByText(/시간 설정을 확인해주세요/i)).toBeInTheDocument();
+    const toastMessage = await screen.findAllByText(/시간 설정을 확인해주세요/i);
+    expect(toastMessage[0]).toBeInTheDocument();
   });
 });
 
