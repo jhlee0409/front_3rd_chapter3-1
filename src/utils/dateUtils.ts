@@ -103,3 +103,7 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
+
+export function isEqualDate(date1: Date, date2: Date) {
+  return date1.toDateString() === date2.toDateString();
+}

@@ -1,6 +1,6 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import React from 'react';
 
 import {
   setupCreateHandler,
@@ -11,7 +11,11 @@ import { events } from '../__mocks__/response/events.json' assert { type: 'json'
 import App from '../App';
 import { Event, EventForm } from '../types';
 
+import { Providers } from '@/app/providers';
+
 const initialEvents = [...events] as Event[];
+
+const Provider = ({ children }: { children: React.ReactNode }) => <Providers>{children}</Providers>;
 
 describe('일정 CRUD 및 기본 기능', () => {
   const newEvent = {
@@ -32,7 +36,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
   beforeEach(() => {
     vi.setSystemTime('2024-10-01T00:00:00');
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
   });
 
   // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
@@ -183,17 +187,16 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  beforeEach(() => {
-    const date = new Date('2024-10-01T00:00:00');
-    vi.setSystemTime(date);
-  });
+  beforeEach(() => {});
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    const date = new Date('2024-10-01T00:00:00');
+    vi.setSystemTime(date);
+    render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
     await userEvent.selectOptions(viewSelect, 'week');
@@ -206,9 +209,8 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     const date = new Date('2024-10-15T00:00:00');
     vi.setSystemTime(date);
-    // 어떤 생각을 가지고 하고 있는지 확인
 
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
     await userEvent.selectOptions(viewSelect, 'week');
@@ -218,13 +220,13 @@ describe('일정 뷰', () => {
   });
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    const date = new Date('2024-09-15T00:00:00');
+    vi.setSystemTime(date);
+
+    render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
     await userEvent.selectOptions(viewSelect, 'month');
-
-    const nextButton = screen.getByLabelText('Next');
-    await userEvent.click(nextButton);
 
     const monthView = screen.getByTestId('month-view');
 
@@ -232,7 +234,9 @@ describe('일정 뷰', () => {
   });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    const date = new Date('2024-10-01T00:00:00');
+    vi.setSystemTime(date);
+    render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
     await userEvent.selectOptions(viewSelect, 'month');
@@ -244,7 +248,7 @@ describe('일정 뷰', () => {
     const date = new Date('2024-01-01T00:00:00');
     vi.setSystemTime(date);
 
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
 
     const viewSelect = screen.getByLabelText('view');
     await userEvent.selectOptions(viewSelect, 'month');
@@ -264,7 +268,7 @@ describe('검색 기능', () => {
     vi.useRealTimers();
   });
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
 
     const eventList = screen.getByTestId('event-list');
     const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
@@ -278,7 +282,7 @@ describe('검색 기능', () => {
   });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
 
     const eventList = screen.getByTestId('event-list');
     const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
@@ -291,7 +295,7 @@ describe('검색 기능', () => {
   });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
 
     const eventList = screen.getByTestId('event-list');
     const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
@@ -312,7 +316,7 @@ describe('일정 충돌', () => {
   beforeEach(() => {
     const date = new Date('2024-10-01T00:00:00');
     vi.setSystemTime(date);
-    render(<App />, { wrapper: ChakraProvider });
+    render(<App />, { wrapper: Provider });
   });
 
   afterEach(() => {
@@ -436,7 +440,7 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   const date = new Date('2024-10-15T09:50:00');
   vi.setSystemTime(date);
 
-  render(<App />, { wrapper: ChakraProvider });
+  render(<App />, { wrapper: Provider });
 
   const eventList = screen.getByTestId('event-list');
 
