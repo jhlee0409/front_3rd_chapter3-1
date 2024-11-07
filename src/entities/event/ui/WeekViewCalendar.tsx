@@ -2,10 +2,10 @@ import { Heading, Text, VStack } from '@chakra-ui/react';
 
 import { CalendarDayCell } from './CalendarDayCell';
 
+import { formatWeek, getWeekDates, isEqualDate } from '@/features/event/lib/dateUtils';
 import { weekDays } from '@/shared/model/date-config';
 import { Table } from '@/shared/ui';
 import { Event } from '@/types';
-import { formatWeek, getWeekDates, isEqualDate } from '@/utils/dateUtils';
 
 type WeekViewCalendarProps = {
   currentDate: Date;

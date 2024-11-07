@@ -1,8 +1,7 @@
 import { Button, Text } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-import { createEventFormData } from '../lib/eventUtils';
-
+import { createEventFormData } from '@/features/event/lib/eventUtils';
 import { useEventContext } from '@/features/event/model/EventContext';
 import { AlertDialog } from '@/shared/ui';
 

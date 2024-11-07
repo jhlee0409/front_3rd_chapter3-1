@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useCalendarView } from '../../hooks/useCalendarView.ts';
+import { useCalendarView } from '../../features/event/model/useCalendarView.ts';
 
 describe('useCalendarView', () => {
   beforeEach(() => {

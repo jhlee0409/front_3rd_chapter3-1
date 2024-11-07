@@ -5,7 +5,12 @@ import { CalendarDayCell } from './CalendarDayCell';
 import { weekDays } from '@/shared/model/date-config';
 import { Table } from '@/shared/ui';
 import { Event } from '@/types';
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/utils/dateUtils';
+import {
+  formatDate,
+  formatMonth,
+  getEventsForDay,
+  getWeeksAtMonth,
+} from '@/features/event/lib/dateUtils';
 
 type MonthViewCalendarProps = {
   currentDate: Date;

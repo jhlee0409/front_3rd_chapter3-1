@@ -1,8 +1,8 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import { createEventRepeatState } from '@/features/event/lib/eventUtils';
+import { getTimeErrorMessage } from '@/features/event/lib/timeValidation';
 import { Event } from '@/types';
-import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 

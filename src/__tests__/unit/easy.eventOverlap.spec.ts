@@ -4,7 +4,7 @@ import {
   findOverlappingEvents,
   isOverlapping,
   parseDateTime,
-} from '../../utils/eventOverlap';
+} from '../../features/event/lib/eventOverlap';
 
 describe('parseDateTime', () => {
   it('2024-11-03 03:25을 정확한 Date 객체로 변환한다', () => {

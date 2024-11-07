@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useNotifications } from '../../hooks/useNotifications.ts';
+import { useNotifications } from '../../features/event/model/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { createNotificationMessage } from '../../utils/notificationUtils.ts';
+import { createNotificationMessage } from '../../features/event/lib/notificationUtils.ts';
 
 const events: Event[] = [
   {

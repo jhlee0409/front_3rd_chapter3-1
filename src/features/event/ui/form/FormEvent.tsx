@@ -14,8 +14,8 @@ import { FormRepeatControl } from './FormRepeatControl';
 import { FormSubmitEventButton } from './FormSubmitEventButton';
 import { useEventContext } from '../../model/EventContext';
 
+import { getTimeErrorMessage } from '@/features/event/lib/timeValidation';
 import { notificationOptions } from '@/shared/model/notification-config';
-import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
 

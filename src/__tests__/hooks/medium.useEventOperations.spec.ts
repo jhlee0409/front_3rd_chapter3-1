@@ -9,7 +9,7 @@ import {
   deleteEventResolver,
 } from '../../__mocks__/handlersUtils.ts';
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
+import { useEventOperations } from '../../features/event/model/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event, EventForm } from '../../types.ts';
 

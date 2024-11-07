@@ -1,14 +1,13 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-import { createEventFormData } from '../lib/eventUtils';
-
-import { useCalendarView } from '@/hooks/useCalendarView';
-import { useEventForm } from '@/hooks/useEventForm';
-import { useEventOperations } from '@/hooks/useEventOperations';
-import { useNotifications } from '@/hooks/useNotifications';
-import { useSearch } from '@/hooks/useSearch';
+import { findOverlappingEvents } from '@/features/event/lib/eventOverlap';
+import { createEventFormData } from '@/features/event/lib/eventUtils';
+import { useCalendarView } from '@/features/event/model/useCalendarView';
+import { useEventForm } from '@/features/event/model/useEventForm';
+import { useEventOperations } from '@/features/event/model/useEventOperations';
+import { useNotifications } from '@/features/event/model/useNotifications';
+import { useSearch } from '@/features/event/model/useSearch';
 import { Event, EventForm } from '@/types';
-import { findOverlappingEvents } from '@/utils/eventOverlap';
 
 type EventContextType = {
   formValues: ReturnType<typeof useEventForm> & {
