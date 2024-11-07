@@ -1,34 +1,26 @@
 import { Button, useToast } from '@chakra-ui/react';
-import { useMemo } from 'react';
 
+import { validateEvent } from '../../lib/eventValidate';
 import { useEventContext } from '../../model/EventContext';
 
 export const FormSubmitEventButton = () => {
   const { formValues, operationsValues, state } = useEventContext();
-  const {
-    formState,
-    startTime,
-    endTime,
-    startTimeError,
-    endTimeError,
-    editingEvent,
-    resetForm,
-    eventFormData,
-  } = formValues;
-  const { title, date } = formState;
+  const { startTimeError, endTimeError, editingEvent, resetForm, eventFormData } = formValues;
   const { saveEvent } = operationsValues;
   const { handleOverlap } = state;
 
   const toast = useToast();
 
-  const isInvalidForm = useMemo(
-    () => !title || !date || !startTime || !endTime,
-    [title, date, startTime, endTime]
-  );
-  const isTimeError = useMemo(() => startTimeError || endTimeError, [startTimeError, endTimeError]);
-
   const addOrUpdateEvent = async () => {
-    if (isInvalidForm) {
+    const validationResult = validateEvent({
+      event: eventFormData,
+      error: {
+        startTimeError,
+        endTimeError,
+      },
+    });
+
+    if (!validationResult.required) {
       toast({
         title: '필수 정보를 모두 입력해주세요.',
         status: 'error',
@@ -37,7 +29,7 @@ export const FormSubmitEventButton = () => {
       });
       return;
     }
-    if (isTimeError) {
+    if (!validationResult.time) {
       toast({
         title: '시간 설정을 확인해주세요.',
         status: 'error',
