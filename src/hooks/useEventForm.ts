@@ -40,11 +40,11 @@ export const useEventForm = (initialEvent?: Event) => {
     endTimeError: null,
   });
 
-  const handleRepeatChange = useCallback((name: string, value: string) => {
+  const handleRepeatChange = useCallback((name: string, value: string | boolean | number) => {
     setRepeatState((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleEventChange = useCallback((name: string, value: string) => {
+  const handleEventChange = useCallback((name: string, value: string | number) => {
     setFormState((prev) => ({ ...prev, [name]: value }));
   }, []);
 
@@ -70,9 +70,14 @@ export const useEventForm = (initialEvent?: Event) => {
     setStartTime('');
     setEndTime('');
     setFormState(initialState);
-    setRepeatState(initialRepeatState);
+    setRepeatState({
+      isRepeating: false,
+      repeatType: 'none',
+      repeatInterval: 1,
+      repeatEndDate: '',
+    });
     setTimeError({ startTimeError: null, endTimeError: null });
-  }, [initialState, initialRepeatState]);
+  }, [initialState]);
 
   const editEvent = useCallback((event: Event) => {
     setEditingEvent(event);

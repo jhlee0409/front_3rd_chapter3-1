@@ -1,5 +1,5 @@
 import { Button, useToast } from '@chakra-ui/react';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
 import { useEventContext } from '../../model/EventContext';
 
@@ -21,8 +21,14 @@ export const FormSubmitEventButton = () => {
 
   const toast = useToast();
 
-  const handleShowRequiredError = useCallback(() => {
-    if (!title || !date || !startTime || !endTime) {
+  const isInvalidForm = useMemo(
+    () => !title || !date || !startTime || !endTime,
+    [title, date, startTime, endTime]
+  );
+  const isTimeError = useMemo(() => startTimeError || endTimeError, [startTimeError, endTimeError]);
+
+  const addOrUpdateEvent = async () => {
+    if (isInvalidForm) {
       toast({
         title: '필수 정보를 모두 입력해주세요.',
         status: 'error',
@@ -31,22 +37,15 @@ export const FormSubmitEventButton = () => {
       });
       return;
     }
-  }, [toast, title, date, startTime, endTime]);
-
-  const handleShowTimeError = useCallback(() => {
-    if (startTimeError || endTimeError) {
+    if (isTimeError) {
       toast({
         title: '시간 설정을 확인해주세요.',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
+      return;
     }
-  }, [toast, startTimeError, endTimeError]);
-
-  const addOrUpdateEvent = async () => {
-    handleShowRequiredError();
-    handleShowTimeError();
     handleOverlap();
     await saveEvent(eventFormData);
     resetForm();

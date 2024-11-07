@@ -123,7 +123,18 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     const updatesEvent = {
       ...firstEvent,
+      title: '수정된 일정',
+      date: '2024-10-16',
+      startTime: '19:00',
+      endTime: '20:00',
+      description: '수정된 일정 설명',
       location: '수정된 장소',
+      category: '개인',
+      notificationTime: 120,
+      repeat: {
+        type: 'monthly',
+        interval: 2,
+      },
     };
 
     setupUpdateHandler(initialEvents);
@@ -151,6 +162,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     const descriptionInput = screen.getByLabelText('설명');
     const locationInput = screen.getByLabelText('위치');
     const categoryInput = screen.getByLabelText('카테고리');
+
     const notificationTimeSelect = screen.getByLabelText('알림 설정');
 
     const repeatTypeSelect = screen.queryByLabelText('반복 유형');
@@ -175,16 +187,65 @@ describe('일정 CRUD 및 기본 기능', () => {
       expect(repeatIntervalInput).toHaveValue(firstEvent.repeat.interval.toString());
     }
 
+    // 제목을 지우고 수정된 제목 입력
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, updatesEvent.title);
+
+    // 날짜를 지우고 수정된 날짜 입력
+    await userEvent.clear(dateInput);
+    await userEvent.type(dateInput, updatesEvent.date);
+
+    // 시작 시간을 지우고 수정된 시작 시간 입력
+    await userEvent.clear(startTimeInput);
+    await userEvent.type(startTimeInput, updatesEvent.startTime);
+
+    // 종료 시간을 지우고 수정된 종료 시간 입력
+    await userEvent.clear(endTimeInput);
+    await userEvent.type(endTimeInput, updatesEvent.endTime);
+
+    // 설명을 지우고 수정된 설명 입력
+    await userEvent.clear(descriptionInput);
+    await userEvent.type(descriptionInput, updatesEvent.description);
+
     // 장소를 지우고 수정한 장소 입력
     await userEvent.clear(locationInput);
     await userEvent.type(locationInput, updatesEvent.location);
 
+    // 카테고리를 수정된 카테고리 입력
+    await userEvent.selectOptions(categoryInput, updatesEvent.category);
+
+    // 알림 시간을 수정된 알림 시간 입력
+    await userEvent.selectOptions(notificationTimeSelect, updatesEvent.notificationTime.toString());
+
+    if (repeatTypeSelect) {
+      await userEvent.selectOptions(repeatTypeSelect, updatesEvent.repeat.type);
+    }
+    if (repeatIntervalInput) {
+      await userEvent.type(repeatIntervalInput, updatesEvent.repeat.interval.toString());
+    }
+
     await userEvent.click(addEventButton);
 
-    // 수정한 장소가 정확히 반영되었는지 확인
-    await waitFor(() => {
-      expect(within(eventList).getByText(updatesEvent.location)).toBeInTheDocument();
-    });
+    // 수정한 내용가 정확히 반영되었는지 확인
+
+    expect(within(eventList).getByText(updatesEvent.title)).toBeInTheDocument();
+    expect(within(eventList).getByText(updatesEvent.date)).toBeInTheDocument();
+    expect(
+      within(eventList).getByText(updatesEvent.startTime, { exact: false })
+    ).toBeInTheDocument();
+    expect(within(eventList).getByText(updatesEvent.endTime, { exact: false })).toBeInTheDocument();
+    expect(within(eventList).getByText(updatesEvent.description)).toBeInTheDocument();
+    expect(within(eventList).getByText(updatesEvent.location)).toBeInTheDocument();
+    expect(
+      within(eventList).getByText(updatesEvent.category, { exact: false })
+    ).toBeInTheDocument();
+    expect(within(eventList).getByText(/2시간 전/i)).toBeInTheDocument();
+    if (repeatTypeSelect) {
+      expect(repeatTypeSelect).toHaveValue(updatesEvent.repeat.type);
+    }
+    if (repeatIntervalInput) {
+      expect(repeatIntervalInput).toHaveValue(updatesEvent.repeat.interval.toString());
+    }
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
@@ -302,15 +363,30 @@ describe('검색 기능', () => {
   });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const initialData = {
+      id: '2',
+      title: '팀 회의',
+      date: '2024-10-15',
+      startTime: '14:00',
+      endTime: '15:00',
+      description: '팀 미팅',
+      location: '회의실 A',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    } as Event;
+
+    setupCreateHandler([initialData]);
+
     render(<App />, { wrapper: Provider });
 
     const eventList = screen.getByTestId('event-list');
     const searchInput = within(eventList).getByPlaceholderText('검색어를 입력하세요');
 
-    await userEvent.type(searchInput, '회의');
+    await userEvent.type(searchInput, '팀 회의');
 
     await waitFor(() => {
-      expect(within(eventList).getByText(/기존 회의/i)).toBeInTheDocument();
+      expect(within(eventList).getByText(/팀 회의/i)).toBeInTheDocument();
     });
   });
 

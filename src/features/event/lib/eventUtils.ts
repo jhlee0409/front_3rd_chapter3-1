@@ -24,10 +24,10 @@ export const createEventRepeatFormData = (repeatState: RepeatState) => {
 export const createEventFormData = (data: EventFormData): Event | EventForm => {
   const { startTime, endTime, formState, repeatState } = data;
   return {
+    ...formState,
     id: data.editingEvent ? data.editingEvent.id : undefined,
     startTime,
     endTime,
     repeat: createEventRepeatFormData(repeatState),
-    ...formState,
   };
 };

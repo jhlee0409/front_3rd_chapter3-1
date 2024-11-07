@@ -26,7 +26,7 @@ export const FormRepeatControl = () => {
           <Input
             type="number"
             value={repeatState.repeatInterval}
-            onChange={(e) => handleRepeatChange('repeatInterval', e.target.value)}
+            onChange={(e) => handleRepeatChange('repeatInterval', e.target.valueAsNumber)}
             min={1}
           />
         </FormControl>

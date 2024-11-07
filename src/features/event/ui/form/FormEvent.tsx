@@ -121,7 +121,7 @@ export const FormEvent = () => {
         <FormLabel>반복 설정</FormLabel>
         <Checkbox
           isChecked={repeatState.isRepeating}
-          onChange={(e) => handleRepeatChange('isRepeating', e.target.checked.toString())}
+          onChange={(e) => handleRepeatChange('isRepeating', e.target.checked)}
         >
           반복 일정
         </Checkbox>
@@ -131,7 +131,7 @@ export const FormEvent = () => {
         <FormLabel>알림 설정</FormLabel>
         <Select
           value={formState.notificationTime}
-          onChange={(e) => handleEventChange('notificationTime', e.target.value)}
+          onChange={(e) => handleEventChange('notificationTime', +e.target.value)}
         >
           {notificationOptions.map((option) => (
             <option key={option.value} value={option.value}>

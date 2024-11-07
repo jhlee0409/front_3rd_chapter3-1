@@ -62,13 +62,7 @@ export const EventProvider = ({ children }: { children: React.ReactNode }) => {
       endTime: formValues.endTime,
       editingEvent: formValues.editingEvent,
     });
-  }, [
-    formValues.formState,
-    formValues.startTime,
-    formValues.endTime,
-    formValues.editingEvent,
-    formValues.repeatState,
-  ]);
+  }, [formValues]);
 
   const handleOverlapDialogOpen = useCallback((events: Event[]) => {
     setIsOverlapDialogOpen(true);

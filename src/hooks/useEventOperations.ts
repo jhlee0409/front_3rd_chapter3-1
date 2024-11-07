@@ -28,6 +28,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   };
 
   const saveEvent = async (eventData: Event | EventForm) => {
+    console.log('eventData', eventData);
     try {
       let response;
       if (editing) {
