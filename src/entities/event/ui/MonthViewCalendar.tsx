@@ -2,15 +2,15 @@ import { Heading, Text, VStack } from '@chakra-ui/react';
 
 import { CalendarDayCell } from './CalendarDayCell';
 
-import { weekDays } from '@/shared/model/date-config';
-import { Table } from '@/shared/ui';
-import { Event } from '@/types';
 import {
   formatDate,
   formatMonth,
   getEventsForDay,
   getWeeksAtMonth,
 } from '@/features/event/lib/dateUtils';
+import { weekDays } from '@/shared/model/date-config';
+import { Table } from '@/shared/ui';
+import { Event } from '@/types';
 
 type MonthViewCalendarProps = {
   currentDate: Date;

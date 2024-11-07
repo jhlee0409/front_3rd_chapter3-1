@@ -1,8 +1,9 @@
 import { Event } from '../../types';
+
 import {
   createNotificationMessage,
   getUpcomingEvents,
-} from '../../features/event/lib/notificationUtils';
+} from '@/features/event/lib/notificationUtils';
 
 const events: Event[] = [
   {
