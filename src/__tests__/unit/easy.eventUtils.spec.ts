@@ -1,10 +1,6 @@
 import { Event } from '../../types';
 
-import {
-  createEventRepeatFormData,
-  createEventRepeatState,
-  getFilteredEvents,
-} from '@/features/event/lib/eventUtils';
+import { createEventRepeatFormData, getFilteredEvents } from '@/features/event/lib/eventUtils';
 
 const events: Event[] = [
   {

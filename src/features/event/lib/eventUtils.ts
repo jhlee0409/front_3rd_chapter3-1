@@ -1,5 +1,3 @@
-import { RepeatType } from 'framer-motion';
-
 import { getWeekDates, isDateInRange } from './dateUtils';
 import { EventFormData, RepeatState } from '../model/types';
 
