@@ -21,6 +21,7 @@ export const EventCalendar = () => {
           currentDate={currentDate}
           events={filteredEvents}
           notifiedEvents={notifiedEvents}
+          holidays={holidays}
         />
       )}
       {view === 'month' && (

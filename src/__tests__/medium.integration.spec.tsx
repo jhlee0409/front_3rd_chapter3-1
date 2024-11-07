@@ -337,6 +337,19 @@ describe('일정 뷰', () => {
     const monthView = screen.getByTestId('month-view');
     expect(within(monthView).getByText('신정')).toBeInTheDocument();
   });
+
+  it('주간 뷰에 12월 25일(크리스마스)이 공휴일로 표시되는지 확인한다', async () => {
+    const date = new Date('2024-12-25T00:00:00');
+    vi.setSystemTime(date);
+
+    render(<App />, { wrapper: Provider });
+
+    const viewSelect = screen.getByLabelText('view');
+    await userEvent.selectOptions(viewSelect, 'week');
+
+    const weekView = screen.getByTestId('week-view');
+    expect(within(weekView).getByText('크리스마스')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
