@@ -1,6 +1,10 @@
 import { Event } from '../../types';
 
-import { getFilteredEvents } from '@/features/event/lib/eventUtils';
+import {
+  createEventRepeatFormData,
+  createEventRepeatState,
+  getFilteredEvents,
+} from '@/features/event/lib/eventUtils';
 
 const events: Event[] = [
   {
@@ -75,5 +79,26 @@ describe('getFilteredEvents', () => {
   it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {
     const filteredEvents = getFilteredEvents([], '', new Date('2024-11-01'), 'month');
     expect(filteredEvents).toHaveLength(0);
+  });
+});
+
+describe('createEventRepeatFormData', () => {
+  it('isRepeating이 true일 때 기본값은 daily이다', () => {
+    const repeatState = createEventRepeatFormData({
+      isRepeating: true,
+      repeatType: 'none',
+      repeatInterval: 1,
+      repeatEndDate: '',
+    });
+    expect(repeatState.type).toBe('daily');
+  });
+  it('isRepeating이 false일 때 repeatType은 none이다', () => {
+    const repeatState = createEventRepeatFormData({
+      isRepeating: false,
+      repeatType: 'daily',
+      repeatInterval: 1,
+      repeatEndDate: '',
+    });
+    expect(repeatState.type).toBe('none');
   });
 });

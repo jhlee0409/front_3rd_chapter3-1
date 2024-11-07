@@ -1,3 +1,5 @@
+import { RepeatType } from 'framer-motion';
+
 import { getWeekDates, isDateInRange } from './dateUtils';
 import { EventFormData, RepeatState } from '../model/types';
 
@@ -61,10 +63,10 @@ export const createEventRepeatState = (repeatFormData: RepeatInfo) => {
   };
 };
 
-export const createEventRepeatFormData = (repeatState: RepeatState) => {
+export const createEventRepeatFormData = (repeatState: RepeatState): RepeatInfo => {
   const { isRepeating, repeatType, repeatInterval, repeatEndDate } = repeatState;
   return {
-    type: isRepeating ? repeatType : 'none',
+    type: isRepeating ? (repeatType === 'none' ? 'daily' : repeatType) : 'none',
     interval: repeatInterval,
     endDate: repeatEndDate || undefined,
   };
